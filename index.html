@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#09090b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UNSTOPPABLE</title>
+<style>
+    :root {
+        --bg-root: #09090b;
+        --bg-panel: #121215;
+        --bg-card: #18181b;
+        --bg-elevated: #27272a;
+        --border-subtle: #2e2e34;
+        --text-main: #fafafa;
+        --text-sub: #a1a1aa;
+        --text-muted: #71717a;
+        --accent-primary: #3b82f6;
+        --accent-emerald: #10b981;
+        --accent-danger: #ef4444;
+        --accent-amber: #f59e0b;
+    }
+
+    * {
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-root);
+        color: var(--text-main);
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 30px;
+    }
+
+    /* TOPO MOBILE COMPACTO E FORTE */
+    .topbar {
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--border-subtle);
+        padding: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .brand-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+    .brand-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .brand-bar {
+        width: 5px;
+        height: 28px;
+        background: var(--accent-danger);
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+    }
+    .brand-title {
+        font-size: 19px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .btn-fail-reset {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        color: #f87171;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 11.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    .btn-fail-reset:active {
+        background: var(--accent-danger);
+        color: #fff;
+    }
+
+    .streak-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .streak-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+    }
+    .streak-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: var(--text-sub);
+    }
+    .streak-number {
+        font-family: monospace;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--accent-emerald);
+        margin-top: 2px;
+    }
+
+    /* CONTAINER PRINCIPAL */
+    .main-container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .penalty-alert {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid var(--accent-danger);
+        border-left: 4px solid var(--accent-danger);
+        border-radius: 8px;
+        padding: 12px 14px;
+        color: #fecaca;
+        font-size: 12.5px;
+        font-weight: 600;
+        line-height: 1.4;
+        display: none;
+    }
+
+    /* BARRA GLOBAL */
+    .master-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .master-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .master-title {
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: var(--text-sub);
+    }
+    .master-pct {
+        font-family: monospace;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .progress-track {
+        width: 100%;
+        height: 11px;
+        background: #09090b;
+        border: 1px solid var(--border-subtle);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+        border-radius: 99px;
+        transition: width 0.25s ease;
+    }
+
+    /* CARTÕES DE TAREFA MOBILE */
+    .task-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        padding: 18px 16px;
+        display: flex;
+        flex-direction: column;
+    }
+    .task-card.completed {
+        border-color: rgba(16, 185, 129, 0.6);
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, var(--bg-card) 100%);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .task-name {
+        font-size: 15.5px;
+        font-weight: 800;
+    }
+    .task-desc {
+        font-size: 12px;
+        color: var(--text-sub);
+        margin-top: 2px;
+    }
+    .task-pct-badge {
+        font-family: monospace;
+        font-size: 19px;
+        font-weight: 900;
+        color: var(--accent-primary);
+    }
+    .task-card.completed .task-pct-badge {
+        color: var(--accent-emerald);
+    }
+
+    /* CRONÔMETRO */
+    .timer-display-box {
+        background: var(--bg-root);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .timer-digits {
+        font-family: monospace;
+        font-size: 25px;
+        font-weight: 900;
+        color: #38bdf8;
+    }
+    .timer-sub {
+        font-size: 10px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .btn-action {
+        flex: 1;
+        background: var(--bg-elevated);
+        border: 1px solid #3f3f46;
+        color: var(--text-main);
+        border-radius: 9px;
+        padding: 13px 10px;
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+        cursor: pointer;
+    }
+    .btn-action:active {
+        transform: scale(0.98);
+    }
+    .btn-action.primary {
+        background: var(--accent-primary);
+        border-color: #60a5fa;
+        color: #ffffff;
+    }
+    .btn-action.active-running {
+        background: var(--accent-amber);
+        border-color: #fbbf24;
+        color: #09090b;
+    }
+    .btn-action.success {
+        background: var(--accent-emerald);
+        border-color: #34d399;
+        color: #052e16;
+    }
+</style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="brand-row">
+            <div class="brand-group">
+                <div class="brand-bar" id="status-bar-indicator"></div>
+                <div class="brand-title">UNSTOPPABLE</div>
+            </div>
+            <button class="btn-fail-reset" onclick="declararFalhaManual()">Falhei (Zerar)</button>
+        </div>
+
+        <div class="streak-grid">
+            <div class="streak-box">
+                <div class="streak-label">Sequência Atual</div>
+                <div class="streak-number" id="streak-atual">0 DIAS</div>
+            </div>
+            <div class="streak-box">
+                <div class="streak-label">Recorde Máximo</div>
+                <div class="streak-number" id="melhor-streak" style="color:#a1a1aa;">0 DIAS</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <div class="penalty-alert" id="alerta-penalidade"></div>
+
+        <!-- Progresso Global -->
+        <section class="master-card">
+            <div class="master-head">
+                <span class="master-title">META DIÁRIA INEGOCIÁVEL</span>
+                <span class="master-pct" id="pct-global">0%</span>
+            </div>
+            <div class="progress-track" style="height: 13px;">
+                <div class="progress-fill" id="barra-global"></div>
+            </div>
+        </section>
+
+        <!-- 1. 2 HORAS DE ESTUDO -->
+        <div class="task-card" id="card-estudo">
+            <div class="task-header">
+                <div>
+                    <div class="task-name">📚 2 Horas de Estudo</div>
+                    <div class="task-desc">Continua contando mesmo com a tela bloqueada</div>
+                </div>
+                <div class="task-pct-badge" id="pct-estudo">0%</div>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="barra-estudo"></div>
+            </div>
+
+            <div class="timer-display-box">
+                <div>
+                    <div class="timer-sub">Restante Hoje</div>
+                    <div class="timer-digits" id="visor-restante">02:00:00</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="timer-sub">Concluído</div>
+                    <div style="font-family:monospace; font-size:14px; color:#a1a1aa; font-weight:700;" id="visor-feito">00:00:00</div>
+                </div>
+            </div>
+
+            <div class="task-actions">
+                <button class="btn-action primary" id="btn-timer-toggle" onclick="alternarCronometro()">▶ Iniciar Estudo</button>
+            </div>
+        </div>
+
+        <!-- 2. 3 LITROS DE ÁGUA -->
+        <div class="task-card" id="card-agua">
+            <div class="task-header">
+                <div>
+                    <div class="task-name">💧 3 Litros de Água</div>
+                    <div class="task-desc">Progresso: <span id="lbl-agua-ml">0</span> / 3000 ml</div>
+                </div>
+                <div class="task-pct-badge" id="pct-agua">0%</div>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="barra-agua"></div>
+            </div>
+
+            <div class="task-actions">
+                <button class="btn-action" style="flex:0.5;" onclick="ajustarAgua(-250)">-250</button>
+                <button class="btn-action" onclick="ajustarAgua(250)">+250 ml</button>
+                <button class="btn-action primary" onclick="ajustarAgua(500)">+500 ml</button>
+            </div>
+        </div>
+
+        <!-- 3. EXERCÍCIO FÍSICO -->
+        <div class="task-card" id="card-exercicio">
+            <div class="task-header">
+                <div>
+                    <div class="task-name">🏋️ Exercício Físico</div>
+                    <div class="task-desc">Treino + Cardio do dia</div>
+                </div>
+                <div class="task-pct-badge" id="pct-exercicio">0%</div>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="barra-exercicio"></div>
+            </div>
+
+            <div class="task-actions">
+                <button class="btn-action" onclick="definirExercicio(0)">0%</button>
+                <button class="btn-action" onclick="definirExercicio(50)">50%</button>
+                <button class="btn-action success" onclick="definirExercicio(100)">✓ 100% Feito</button>
+            </div>
+        </div>
+
+        <!-- 4. ALIMENTAÇÃO SAUDÁVEL -->
+        <div class="task-card" id="card-alimentacao">
+            <div class="task-header">
+                <div>
+                    <div class="task-name">🥗 Alimentação Saudável</div>
+                    <div class="task-desc">4 refeições limpas no plano</div>
+                </div>
+                <div class="task-pct-badge" id="pct-alimentacao">0%</div>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="barra-alimentacao"></div>
+            </div>
+
+            <div class="task-actions">
+                <button class="btn-action" style="flex:0.5;" onclick="ajustarAlimentacao(-25)">-25%</button>
+                <button class="btn-action primary" onclick="ajustarAlimentacao(25)">+1 Refeição (25%)</button>
+                <button class="btn-action success" onclick="definirAlimentacaoDireto(100)">✓ 100%</button>
+            </div>
+        </div>
+
+    </main>
+
+<script>
+const CHAVE_STORAGE = "unstoppable_mobile_v1";
+const META_ESTUDO = 7200; // 2 horas
+const META_AGUA = 3000;   // 3 litros
+
+function dataLocalISO(d = new Date()) {
+    const ano = d.getFullYear();
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const dia = String(d.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+}
+
+function ontemLocalISO() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return dataLocalISO(d);
+}
+
+function criarEstadoPadrao(dataStr, streak = 0, recorde = 0, aviso = "") {
+    return {
+        data_atual: dataStr,
+        streak_dias: streak,
+        melhor_streak: recorde,
+        dia_consolidado: false,
+        ultimo_aviso_reset: aviso,
+        timer_ativo_desde_ms: null, // Permite contar mesmo com o celular bloqueado!
+        tarefas: {
+            exercicio_pct: 0,
+            alimentacao_pct: 0,
+            estudo_segundos: 0,
+            agua_ml: 0
+        }
+    };
+}
+
+function todasMetas100(t) {
+    return (
+        t.exercicio_pct >= 100 &&
+        t.alimentacao_pct >= 100 &&
+        t.estudo_segundos >= META_ESTUDO &&
+        t.agua_ml >= META_AGUA
+    );
+}
+
+let estado = carregarEAuditar();
+
+function carregarEAuditar() {
+    const hoje = dataLocalISO();
+    const ontem = ontemLocalISO();
+    const bruto = localStorage.getItem(CHAVE_STORAGE);
+
+    if (!bruto) {
+        const inicial = criarEstadoPadrao(hoje);
+        localStorage.setItem(CHAVE_STORAGE, JSON.stringify(inicial));
+        return inicial;
+    }
+
+    let est;
+    try {
+        est = JSON.parse(bruto);
+    } catch (e) {
+        est = criarEstadoPadrao(hoje);
+    }
+
+    // Se virou o dia, audita implacavelmente o dia anterior
+    if (est.data_atual !== hoje) {
+        let streak = est.streak_dias || 0;
+        let recorde = est.melhor_streak || 0;
+        let aviso = "";
+
+        if (est.data_atual === ontem && todasMetas100(est.tarefas)) {
+            if (!est.dia_consolidado) {
+                streak += 1;
+                recorde = Math.max(recorde, streak);
+            }
+        } else {
+            aviso = `⚠️ PENALIDADE: Você não fechou 100% em ${est.data_atual}. Sua contagem voltou ao ZERO.`;
+            streak = 0;
+        }
+
+        const novo = criarEstadoPadrao(hoje, streak, recorde, aviso);
+        localStorage.setItem(CHAVE_STORAGE, JSON.stringify(novo));
+        return novo;
+    }
+
+    return est;
+}
+
+function salvarEstado() {
+    if (todasMetas100(estado.tarefas) && !estado.dia_consolidado) {
+        estado.streak_dias += 1;
+        estado.melhor_streak = Math.max(estado.melhor_streak || 0, estado.streak_dias);
+        estado.dia_consolidado = true;
+        estado.ultimo_aviso_reset = "";
+    } else if (!todasMetas100(estado.tarefas) && estado.dia_consolidado) {
+        estado.streak_dias = Math.max(0, estado.streak_dias - 1);
+        estado.dia_consolidado = false;
+    }
+    localStorage.setItem(CHAVE_STORAGE, JSON.stringify(estado));
+    atualizarInterface();
+}
+
+function obterSegundosEstudoAtuais() {
+    let base = estado.tarefas.estudo_segundos || 0;
+    if (estado.timer_ativo_desde_ms) {
+        const dec = Math.floor((Date.now() - estado.timer_ativo_desde_ms) / 1000);
+        base = Math.min(META_ESTUDO, base + Math.max(0, dec));
+    }
+    return base;
+}
+
+function formatarHMS(segTotal) {
+    const s = Math.max(0, Math.floor(segTotal));
+    const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+    const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
+}
+
+function atualizarInterface() {
+    const segEstudo = obterSegundosEstudoAtuais();
+
+    // Se atingiu 2 horas enquanto o timer rodava, consolida automaticamente
+    if (estado.timer_ativo_desde_ms && segEstudo >= META_ESTUDO) {
+        estado.tarefas.estudo_segundos = META_ESTUDO;
+        estado.timer_ativo_desde_ms = null;
+        salvarEstado();
+        return;
+    }
+
+    const t = estado.tarefas;
+    const pctEstudo = Math.min(100, Math.round((segEstudo / META_ESTUDO) * 100));
+    const pctAgua = Math.min(100, Math.round((t.agua_ml / META_AGUA) * 100));
+    const pctEx = Math.min(100, Math.max(0, t.exercicio_pct));
+    const pctAl = Math.min(100, Math.max(0, t.alimentacao_pct));
+    const pctGlobal = Math.round((pctEstudo + pctAgua + pctEx + pctAl) / 4);
+
+    document.getElementById('streak-atual').innerText = `${estado.streak_dias} DIAS`;
+    document.getElementById('melhor-streak').innerText = `${estado.melhor_streak} DIAS`;
+
+    const alerta = document.getElementById('alerta-penalidade');
+    if (estado.ultimo_aviso_reset) {
+        alerta.style.display = 'block';
+        alerta.innerText = estado.ultimo_aviso_reset;
+    } else {
+        alerta.style.display = 'none';
+    }
+
+    document.getElementById('pct-global').innerText = `${pctGlobal}%`;
+    document.getElementById('barra-global').style.width = `${pctGlobal}%`;
+    document.getElementById('status-bar-indicator').style.background = (pctGlobal === 100) ? '#10b981' : '#ef4444';
+
+    // Estudo
+    document.getElementById('pct-estudo').innerText = `${pctEstudo}%`;
+    document.getElementById('barra-estudo').style.width = `${pctEstudo}%`;
+    document.getElementById('visor-restante').innerText = formatarHMS(META_ESTUDO - segEstudo);
+    document.getElementById('visor-feito').innerText = `${formatarHMS(segEstudo)} / 02:00:00`;
+    document.getElementById('card-estudo').classList.toggle('completed', pctEstudo >= 100);
+
+    const btnTimer = document.getElementById('btn-timer-toggle');
+    if (segEstudo >= META_ESTUDO) {
+        btnTimer.className = 'btn-action success';
+        btnTimer.innerText = '✓ 2 Horas Concluídas Hoje';
+    } else if (estado.timer_ativo_desde_ms) {
+        btnTimer.className = 'btn-action active-running';
+        btnTimer.innerText = '⏸ Pausar e Salvar Tempo';
+    } else {
+        btnTimer.className = 'btn-action primary';
+        btnTimer.innerText = segEstudo > 0 ? '▶ Retomar Estudo' : '▶ Iniciar Estudo';
+    }
+
+    // Água
+    document.getElementById('pct-agua').innerText = `${pctAgua}%`;
+    document.getElementById('barra-agua').style.width = `${pctAgua}%`;
+    document.getElementById('lbl-agua-ml').innerText = t.agua_ml;
+    document.getElementById('card-agua').classList.toggle('completed', pctAgua >= 100);
+
+    // Exercício
+    document.getElementById('pct-exercicio').innerText = `${pctEx}%`;
+    document.getElementById('barra-exercicio').style.width = `${pctEx}%`;
+    document.getElementById('card-exercicio').classList.toggle('completed', pctEx >= 100);
+
+    // Alimentação
+    document.getElementById('pct-alimentacao').innerText = `${pctAl}%`;
+    document.getElementById('barra-alimentacao').style.width = `${pctAl}%`;
+    document.getElementById('card-alimentacao').classList.toggle('completed', pctAl >= 100);
+}
+
+function alternarCronometro() {
+    if (estado.timer_ativo_desde_ms) {
+        // Pausa e grava os segundos acumulados
+        estado.tarefas.estudo_segundos = obterSegundosEstudoAtuais();
+        estado.timer_ativo_desde_ms = null;
+        salvarEstado();
+    } else {
+        if (estado.tarefas.estudo_segundos >= META_ESTUDO) return;
+        estado.timer_ativo_desde_ms = Date.now();
+        salvarEstado();
+    }
+}
+
+function ajustarAgua(ml) {
+    estado.tarefas.agua_ml = Math.min(META_AGUA, Math.max(0, estado.tarefas.agua_ml + ml));
+    salvarEstado();
+}
+
+function definirExercicio(pct) {
+    estado.tarefas.exercicio_pct = pct;
+    salvarEstado();
+}
+
+function ajustarAlimentacao(delta) {
+    estado.tarefas.alimentacao_pct = Math.min(100, Math.max(0, estado.tarefas.alimentacao_pct + delta));
+    salvarEstado();
+}
+
+function definirAlimentacaoDireto(pct) {
+    estado.tarefas.alimentacao_pct = pct;
+    salvarEstado();
+}
+
+function declararFalhaManual() {
+    if (!confirm('CONDIÇÃO INEGOCIÁVEL: Confirmar falha hoje? Todo o seu progresso e a sequência de dias voltarão ao ZERO.')) {
+        return;
+    }
+    estado = criarEstadoPadrao(
+        dataLocalISO(),
+        0,
+        estado.melhor_streak || 0,
+        "⚠️ CONTAGEM ZERADA: Falha registrada. Recomece do Dia 0."
+    );
+    salvarEstado();
+}
+
+// Atualiza o visor a cada segundo e audita virada de meia-noite
+setInterval(() => {
+    const hoje = dataLocalISO();
+    if (estado.data_atual !== hoje) {
+        estado = carregarEAuditar();
+    }
+    atualizarInterface();
+}, 1000);
+
+atualizarInterface();
+</script>
+</body>
+</html>
